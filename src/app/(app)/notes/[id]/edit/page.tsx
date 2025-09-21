@@ -9,18 +9,19 @@ import { Skeleton } from '@/components/ui/skeleton';
 export default function EditNotePage() {
   const params = useParams();
   const router = useRouter();
-  const { getNoteById } = useNotes();
+  const { getNoteById, isLoading } = useNotes(); // Destructure isLoading
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
   const note = getNoteById(id);
 
   useEffect(() => {
-    if (!note) {
-      // Could redirect to a 404 page
-      // router.replace('/404');
+    // If loading is finished and there's still no note, then redirect.
+    if (!isLoading && !note) {
+      router.replace('/notes');
     }
-  }, [note, router]);
+  }, [isLoading, note, router]);
 
-  if (!note) {
+  // Display a skeleton loader while the notes are loading.
+  if (isLoading || !note) {
     return (
         <div>
             <Skeleton className="h-10 w-1/2 mb-6" />

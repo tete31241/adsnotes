@@ -1,13 +1,24 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useState, useEffect, useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Sparkles, Tag, Trash2, X, Loader2, Save } from 'lucide-react';
 import type { Note } from '@/lib/types';
 import { useNotes } from '@/hooks/use-notes';
@@ -41,7 +52,7 @@ export default function NoteEditor({ note }: NoteEditorProps) {
   const [tags, setTags] = useState<string[]>(note?.tags || []);
   const [tagInput, setTagInput] = useState('');
   
-  const [formState, formAction] = useFormState(suggestNoteTags, initialState);
+  const [formState, formAction] = useActionState(suggestNoteTags, initialState);
 
   useEffect(() => {
     if (formState.status === 'success' && formState.tags) {
@@ -79,9 +90,10 @@ export default function NoteEditor({ note }: NoteEditorProps) {
   };
 
   const handleDelete = () => {
-    if (note && window.confirm('Are you sure you want to delete this note?')) {
-      deleteNote(note.id);
-    }
+      if (note) {
+          deleteNote(note.id);
+          router.push('/notes');
+      }
   }
 
   return (
@@ -133,9 +145,25 @@ export default function NoteEditor({ note }: NoteEditorProps) {
       
       <div className="fixed bottom-14 right-0 left-0 md:left-0 lg:left-[--sidebar-width-icon] p-4 bg-background/80 backdrop-blur-sm border-t flex justify-end gap-4">
         {note && (
-          <Button variant="destructive" onClick={handleDelete}>
-            <Trash2 className="mr-2 h-4 w-4" /> Delete
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive">
+                <Trash2 className="mr-2 h-4 w-4" /> Delete
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure you want to delete this note?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete this note.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete}>Continue</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         )}
         <Button onClick={() => router.push('/notes')}>Cancel</Button>
         <Button onClick={handleSave}>

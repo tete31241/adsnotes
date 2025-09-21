@@ -2,12 +2,11 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((val: T) => T)) => void] {
+function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((val: T) => T)) => void, boolean] {
   const [storedValue, setStoredValue] = useState<T>(initialValue);
-  const [isMounted, setIsMounted] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // Start with loading true
 
   useEffect(() => {
-    setIsMounted(true);
     try {
       const item = window.localStorage.getItem(key);
       setStoredValue(item ? JSON.parse(item) : initialValue);
@@ -15,6 +14,7 @@ function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((val
       console.error(error);
       setStoredValue(initialValue);
     }
+    setIsLoading(false); // Set loading to false after the first load
   }, [key, initialValue]);
 
   const setValue = useCallback((value: T | ((val: T) => T)) => {
@@ -35,7 +35,6 @@ function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((val
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === key && e.newValue) {
-        setIsMounted(true);
         setStoredValue(JSON.parse(e.newValue));
       }
     };
@@ -46,9 +45,7 @@ function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((val
     };
   }, [key]);
 
-  const safeValue = isMounted ? storedValue : initialValue;
-
-  return [safeValue, setValue];
+  return [storedValue, setValue, isLoading];
 }
 
 export default useLocalStorage;

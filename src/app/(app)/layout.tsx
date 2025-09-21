@@ -15,10 +15,17 @@ export default function AppLayout({
         <AppSidebar />
         <main className="flex flex-1 flex-col pl-0 lg:pl-[--sidebar-width-icon]">
           <AppHeader />
-          <div className="flex-1 p-4 md:p-6 lg:p-8">{children}</div>
+          <div className="flex flex-1">
+            <div className="flex-1 p-4 md:p-6 lg:p-8">{children}</div>
+            <div className="hidden lg:block w-[400px] p-4">
+              <Chatbot />
+            </div>
+          </div>
         </main>
       </div>
-      <Chatbot />
+       <div className="lg:hidden">
+        <Chatbot />
+       </div>
       <AdBanner />
     </SidebarProvider>
   );

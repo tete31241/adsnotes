@@ -10,32 +10,25 @@ import { useToast } from './use-toast';
 const NOTES_STORAGE_KEY = 'adnotes-notes';
 
 export function useNotes() {
-  const [notes, setNotes] = useLocalStorage<Note[]>(NOTES_STORAGE_KEY, initialNotes);
+  const [storageValue, setStorageValue, isLoading] = useLocalStorage<Note[]>(NOTES_STORAGE_KEY, initialNotes);
   const router = useRouter();
   const { toast } = useToast();
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   const getNoteById = (id: string) => {
-    return notes.find((note) => note.id === id);
+    return storageValue.find((note) => note.id === id);
   };
 
   const saveNote = (noteToSave: Omit<Note, 'id' | 'createdAt' | 'updatedAt'> & { id?: string }) => {
     let savedNote: Note;
     if (noteToSave.id) {
-      // Update existing note
       const now = new Date().toISOString();
       savedNote = { ...getNoteById(noteToSave.id)!, ...noteToSave, updatedAt: now };
-      setNotes(notes.map((n) => (n.id === noteToSave.id ? savedNote : n)));
+      setStorageValue(storageValue.map((n) => (n.id === noteToSave.id ? savedNote : n)));
       toast({
         title: "Note Updated",
         description: `"${savedNote.title}" has been saved.`,
       });
     } else {
-      // Create new note
       const now = new Date().toISOString();
       savedNote = {
         ...noteToSave,
@@ -43,7 +36,7 @@ export function useNotes() {
         createdAt: now,
         updatedAt: now,
       };
-      setNotes([savedNote, ...notes]);
+      setStorageValue([savedNote, ...storageValue]);
       toast({
         title: "Note Created",
         description: `"${savedNote.title}" has been created.`,
@@ -65,7 +58,7 @@ export function useNotes() {
         updatedAt: now,
         ...note,
       };
-      setNotes([newNote, ...notes]);
+      setStorageValue([newNote, ...storageValue]);
       toast({
         title: "Voice Note Added",
         description: `A new voice note has been created.`,
@@ -77,16 +70,25 @@ export function useNotes() {
   const deleteNote = (id: string) => {
     const noteToDelete = getNoteById(id);
     if(noteToDelete) {
-        setNotes(notes.filter((n) => n.id !== id));
+        setStorageValue(storageValue.filter((n) => n.id !== id));
         toast({
             title: "Note Deleted",
             description: `"${noteToDelete.title}" has been moved to trash.`,
             variant: "destructive",
         });
-        router.push('/notes');
-        router.refresh();
     }
   };
 
-  return { notes: isClient ? notes : initialNotes, getNoteById, saveNote, addNote, deleteNote };
+  const deleteAllNotes = () => {
+    setStorageValue([]);
+    toast({
+        title: "All Notes Deleted",
+        description: "All notes have been moved to trash.",
+        variant: "destructive",
+    });
+    router.push('/notes');
+    router.refresh();
+  };
+
+  return { notes: storageValue, getNoteById, saveNote, addNote, deleteNote, deleteAllNotes, isLoading };
 }

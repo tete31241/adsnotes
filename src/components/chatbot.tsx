@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useState, useRef, useEffect, useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,10 +31,18 @@ function SubmitButton() {
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [formState, formAction] = useFormState(chatWithBot, initialState);
+  const [formState, formAction] = useActionState(chatWithBot, initialState);
   const formRef = useRef<HTMLFormElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
+
+  useEffect(() => {
+    if (!isMobile) {
+      setIsOpen(true);
+    } else {
+      setIsOpen(false);
+    }
+  }, [isMobile]);
 
   useEffect(() => {
     if (formState.status === 'success' && formState.response) {
@@ -60,21 +68,33 @@ export default function Chatbot() {
     if (!message.trim()) return;
 
     setMessages((prev) => [...prev, { role: 'user', content: message }]);
-    formAction(formData);
+    
+    const newFormData = new FormData();
+    newFormData.append('message', message);
+    
+    // Pass only the last 10 messages for history
+    const recentHistory = messages.slice(-10);
+    newFormData.append('history', JSON.stringify(recentHistory));
+
+    formAction(newFormData);
     formRef.current?.reset();
   };
 
   return (
     <>
-      <div className="fixed bottom-20 right-4 z-50">
-        <Button
-          size="icon"
-          className="rounded-full w-14 h-14 shadow-lg"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {isOpen ? <X /> : <Bot />}
-        </Button>
-      </div>
+        <AnimatePresence>
+            {isMobile && (
+                 <div className="fixed bottom-20 right-4 z-50">
+                    <Button
+                    size="icon"
+                    className="rounded-full w-14 h-14 shadow-lg"
+                    onClick={() => setIsOpen(!isOpen)}
+                    >
+                    {isOpen ? <X /> : <Bot />}
+                    </Button>
+                </div>
+            )}
+        </AnimatePresence>
 
       <AnimatePresence>
         {isOpen && (
@@ -84,18 +104,21 @@ export default function Chatbot() {
             exit={{ opacity: 0, y: 50, scale: 0.9 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             className={cn(
-              "fixed bottom-36 right-4 z-50",
-              isMobile && "bottom-4 right-4 left-4"
+              "fixed bottom-4 right-4 z-50",
+              isMobile ? "w-[calc(100%-2rem)] h-[calc(100vh-10rem)]" : "w-[400px] h-[calc(100vh-5.5rem)] flex flex-col",
+              !isMobile && "relative bottom-auto right-auto"
             )}
           >
-            <Card className={cn("shadow-2xl", isMobile ? "w-full h-[calc(100vh-10rem)]" : "w-[350px] h-[500px] flex flex-col")}>
+            <Card className={cn("shadow-2xl w-full h-full flex flex-col")}>
               <CardHeader className="flex-shrink-0 flex-row items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
                   <Bot /> ADNOTES ASSISTANT
                 </CardTitle>
-                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setIsOpen(false)}>
-                  <X className="h-4 w-4" />
-                </Button>
+                {isMobile && (
+                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setIsOpen(false)}>
+                        <X className="h-4 w-4" />
+                    </Button>
+                )}
               </CardHeader>
               <CardContent className="flex-1 flex flex-col min-h-0">
                 <ScrollArea className="flex-1 pr-4 -mr-4" ref={scrollAreaRef}>
@@ -137,7 +160,7 @@ export default function Chatbot() {
                   <input
                     type="hidden"
                     name="history"
-                    value={JSON.stringify(messages)}
+                    value={JSON.stringify(messages.slice(-10))}
                   />
                   <Input name="message" placeholder="Ask anything..." autoComplete="off" />
                   <SubmitButton />
