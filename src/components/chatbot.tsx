@@ -10,6 +10,7 @@ import { Bot, Loader2, Send, X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { chatWithBot, ChatState } from '@/app/actions';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 type Message = {
   role: 'user' | 'model';
@@ -33,6 +34,7 @@ export default function Chatbot() {
   const [formState, formAction] = useFormState(chatWithBot, initialState);
   const formRef = useRef<HTMLFormElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (formState.status === 'success' && formState.response) {
@@ -81,12 +83,15 @@ export default function Chatbot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 50, scale: 0.9 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed bottom-36 right-4 z-50"
+            className={cn(
+              "fixed bottom-36 right-4 z-50",
+              isMobile && "bottom-4 right-4 left-4"
+            )}
           >
-            <Card className="w-[350px] h-[500px] flex flex-col shadow-2xl">
+            <Card className={cn("shadow-2xl", isMobile ? "w-full h-[calc(100vh-10rem)]" : "w-[350px] h-[500px] flex flex-col")}>
               <CardHeader className="flex-shrink-0">
                 <CardTitle className="flex items-center gap-2">
-                  <Bot /> AI Assistant
+                  <Bot /> ADNOTES ASSISTANT
                 </CardTitle>
               </CardHeader>
               <CardContent className="flex-1 flex flex-col min-h-0">
