@@ -89,10 +89,13 @@ export default function Chatbot() {
             )}
           >
             <Card className={cn("shadow-2xl", isMobile ? "w-full h-[calc(100vh-10rem)]" : "w-[350px] h-[500px] flex flex-col")}>
-              <CardHeader className="flex-shrink-0">
+              <CardHeader className="flex-shrink-0 flex-row items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
                   <Bot /> ADNOTES ASSISTANT
                 </CardTitle>
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setIsOpen(false)}>
+                  <X className="h-4 w-4" />
+                </Button>
               </CardHeader>
               <CardContent className="flex-1 flex flex-col min-h-0">
                 <ScrollArea className="flex-1 pr-4 -mr-4" ref={scrollAreaRef}>
