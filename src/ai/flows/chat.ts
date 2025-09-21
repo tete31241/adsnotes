@@ -10,6 +10,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
+import { Message } from 'genkit';
 
 const MessageSchema = z.object({
     role: z.enum(['user', 'model']),
@@ -40,16 +41,14 @@ const chatFlow = ai.defineFlow(
     async (input) => {
         const { history, message } = input;
 
-        const prompt = [
-            ...history.map((msg) => ({
-                role: msg.role,
-                content: [{ text: msg.content }],
-            })),
-            { role: 'user' as const, content: [{ text: message }] },
-        ];
+        const historyMessages: Message[] = history.map((msg) => ({
+            role: msg.role,
+            content: [{ text: msg.content }],
+        }));
         
         const { output } = await ai.generate({
-            prompt: prompt,
+            history: historyMessages,
+            prompt: message,
             model: 'googleai/gemini-2.5-flash',
             config: {
                 temperature: 0.7,
