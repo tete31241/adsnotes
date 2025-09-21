@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import useLocalStorage from './use-local-storage';
 import type { Note } from '@/lib/types';
 import { initialNotes } from '@/lib/initial-data';
@@ -12,6 +13,11 @@ export function useNotes() {
   const [notes, setNotes] = useLocalStorage<Note[]>(NOTES_STORAGE_KEY, initialNotes);
   const router = useRouter();
   const { toast } = useToast();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const getNoteById = (id: string) => {
     return notes.find((note) => note.id === id);
@@ -82,5 +88,5 @@ export function useNotes() {
     }
   };
 
-  return { notes, getNoteById, saveNote, addNote, deleteNote };
+  return { notes: isClient ? notes : initialNotes, getNoteById, saveNote, addNote, deleteNote };
 }

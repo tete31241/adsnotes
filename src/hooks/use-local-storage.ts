@@ -1,22 +1,26 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((val: T) => T)) => void] {
-  const [storedValue, setStoredValue] = useState<T>(() => {
-    if (typeof window === 'undefined') {
-      return initialValue;
-    }
+  const [storedValue, setStoredValue] = useState<T>(initialValue);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
     try {
       const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
+      setStoredValue(item ? JSON.parse(item) : initialValue);
     } catch (error) {
       console.error(error);
-      return initialValue;
+      setStoredValue(initialValue);
     }
-  });
+  }, [key, initialValue]);
 
-  const setValue = (value: T | ((val: T) => T)) => {
+  const setValue = useCallback((value: T | ((val: T) => T)) => {
+    if (typeof window === 'undefined') {
+      console.warn(`Tried setting localStorage key “${key}” even though environment is not a client`);
+    }
     try {
       const valueToStore = value instanceof Function ? value(storedValue) : value;
       setStoredValue(valueToStore);
@@ -26,12 +30,12 @@ function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((val
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [key, storedValue]);
   
-  // This effect synchronizes the state if the local storage is changed in another tab.
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === key && e.newValue) {
+        setIsMounted(true);
         setStoredValue(JSON.parse(e.newValue));
       }
     };
@@ -42,7 +46,9 @@ function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((val
     };
   }, [key]);
 
-  return [storedValue, setValue];
+  const safeValue = isMounted ? storedValue : initialValue;
+
+  return [safeValue, setValue];
 }
 
 export default useLocalStorage;
