@@ -115,7 +115,7 @@ export default function NoteEditor({ note }: NoteEditorProps) {
               </Badge>
             ))}
           </div>
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-4">
             <Input
               placeholder="Add a tag and press Enter"
               value={tagInput}
@@ -131,7 +131,7 @@ export default function NoteEditor({ note }: NoteEditorProps) {
         </CardContent>
       </Card>
       
-      <div className="fixed bottom-14 right-0 left-0 md:left-[--sidebar-width-icon] p-4 bg-background/80 backdrop-blur-sm border-t flex justify-end gap-4">
+      <div className="fixed bottom-14 right-0 left-0 md:left-0 lg:left-[--sidebar-width-icon] p-4 bg-background/80 backdrop-blur-sm border-t flex justify-end gap-4">
         {note && (
           <Button variant="destructive" onClick={handleDelete}>
             <Trash2 className="mr-2 h-4 w-4" /> Delete

@@ -28,9 +28,9 @@ export default function AppHeader() {
 
   return (
     <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:px-6">
-      <SidebarTrigger className="md:hidden" />
+      <SidebarTrigger className="lg:hidden" />
 
-      <Link href="/notes" className="hidden items-center gap-2 font-bold md:flex">
+      <Link href="/notes" className="hidden items-center gap-2 font-bold lg:flex">
         <BrainCircuit className="h-6 w-6 text-primary" />
         <span className="text-lg">AdNotes</span>
       </Link>
@@ -51,7 +51,8 @@ export default function AppHeader() {
         <VoiceRecorder />
         <Button asChild>
           <Link href="/notes/new">
-            <Plus className="mr-2 h-4 w-4" /> New Note
+            <Plus className="mr-0 md:mr-2 h-4 w-4" />
+            <span className="hidden md:inline">New Note</span>
           </Link>
         </Button>
       </div>
