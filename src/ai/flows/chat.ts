@@ -10,7 +10,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import { Message } from 'genkit';
+import { Message } from 'genkit/experimental/ai';
 
 const MessageSchema = z.object({
     role: z.enum(['user', 'model']),
