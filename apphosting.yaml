@@ -5,3 +5,11 @@ runConfig:
   # Increase this value if you'd like to automatically spin up
   # more instances in response to increased traffic.
   maxInstances: 1
+  # By default, App Hosting sets an environment variable, `GENKIT_ENV`, to
+  # '''production'''. Setting `GENKIT_ENV` to a different value will prevent deploying
+  # in production mode.
+# build:
+#   - npm i
+#   - npm run build
+# start:
+#   - npm start
