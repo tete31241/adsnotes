@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Plus, Mic, Search, BrainCircuit } from 'lucide-react';
+import Image from 'next/image';
+import { Plus, Mic, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SidebarTrigger } from '@/components/ui/sidebar';
@@ -31,8 +32,7 @@ export default function AppHeader() {
       <SidebarTrigger className="lg:hidden" />
 
       <Link href="/notes" className="hidden items-center gap-2 font-bold lg:flex">
-        <BrainCircuit className="h-6 w-6 text-primary" />
-        <span className="text-lg">AdNotes</span>
+        <Image src="/logo.png" alt="AdNotes Logo" width={100} height={30} priority />
       </Link>
 
       <div className="relative ml-auto flex-1 md:grow-0">
