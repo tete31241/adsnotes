@@ -43,10 +43,10 @@ export const useNotesStore = create<NotesState>()(
             id: Date.now().toString(),
             createdAt: now,
             updatedAt: now,
-            title: noteToSave.title || 'Untitled Note',
-            content: noteToSave.content || '',
-            tags: noteToSave.tags || [],
-            type: noteToSave.type || 'text',
+            title: 'Untitled Note',
+            content: '',
+            tags: [],
+            type: 'text',
             ...noteToSave,
           };
           set((state) => ({
@@ -63,12 +63,12 @@ export const useNotesStore = create<NotesState>()(
         const now = new Date().toISOString();
         const newNote: Note = {
           id: Date.now().toString(),
+          createdAt: now,
+          updatedAt: now,
           title: 'New Voice Note',
           content: '',
           tags: ['voice-memo'],
           type: 'voice',
-          createdAt: now,
-          updatedAt: now,
           ...note,
         };
         set((state) => ({
@@ -110,18 +110,15 @@ export const useNotesStore = create<NotesState>()(
             state.isLoading = false;
         }
       },
-      // partialize allows you to only persist a part of the store
       partialize: (state) => ({ notes: state.notes }),
     }
   )
 );
 
-// Custom hook to deal with Zustand's hydration for Next.js SSR
 export function useIsNotesStoreHydrated() {
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
-    // A listener can be added to the store to trigger a re-render once the store is hydrated.
     const unsubHydrate = useNotesStore.persist.onHydrate(() => setIsHydrated(false));
     const unsubFinishHydration = useNotesStore.persist.onFinishHydration(() => setIsHydrated(true));
 
