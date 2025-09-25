@@ -1,4 +1,4 @@
-import NoteEditor from '@/components/note-editor';
+import NoteEditorWrapper from '@/components/note-editor-wrapper';
 import { Suspense } from 'react';
 
 export default function NewNotePage() {
@@ -6,7 +6,7 @@ export default function NewNotePage() {
     <div>
       <h1 className="text-2xl font-bold mb-6">New Note</h1>
       <Suspense fallback={<div>Loading...</div>}>
-        <NoteEditor />
+        <NoteEditorWrapper />
       </Suspense>
     </div>
   );

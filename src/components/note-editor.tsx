@@ -151,10 +151,10 @@ export default function NoteEditor({ note }: NoteEditorProps) {
                 <Trash2 className="mr-2 h-4 w-4" /> Delete
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent>
+            <AlertDialogContent aria-describedby="alert-dialog-description">
               <AlertDialogHeader>
                 <AlertDialogTitle>Are you sure you want to delete this note?</AlertDialogTitle>
-                <AlertDialogDescription>
+                <AlertDialogDescription id="alert-dialog-description">
                   This action cannot be undone. This will permanently delete this note.
                 </AlertDialogDescription>
               </AlertDialogHeader>
