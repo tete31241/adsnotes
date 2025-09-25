@@ -23,11 +23,12 @@ export const useNotesStore = create<NotesState>()(
   persist(
     (set, get) => ({
       notes: initialNotes,
-      isLoading: true, // Will be set to false after hydration
+      isLoading: true,
       getNoteById: (id: string) => get().notes.find((note) => note.id === id),
       saveNote: (noteToSave) => {
-        let savedNote: Note;
         const now = new Date().toISOString();
+        let savedNote: Note;
+
         if (noteToSave.id) {
           const originalNote = get().getNoteById(noteToSave.id);
           savedNote = { ...originalNote!, ...noteToSave, updatedAt: now };
@@ -39,7 +40,7 @@ export const useNotesStore = create<NotesState>()(
             description: `"${savedNote.title}" has been saved.`,
           });
         } else {
-          savedNote = {
+          const defaults = {
             id: Date.now().toString(),
             createdAt: now,
             updatedAt: now,
@@ -47,8 +48,8 @@ export const useNotesStore = create<NotesState>()(
             content: '',
             tags: [],
             type: 'text',
-            ...noteToSave,
           };
+          savedNote = { ...defaults, ...noteToSave };
           set((state) => ({
             notes: [savedNote, ...state.notes],
           }));
@@ -61,16 +62,16 @@ export const useNotesStore = create<NotesState>()(
       },
       addNote: (note) => {
         const now = new Date().toISOString();
-        const newNote: Note = {
-          id: Date.now().toString(),
-          createdAt: now,
-          updatedAt: now,
-          title: 'New Voice Note',
-          content: '',
-          tags: ['voice-memo'],
-          type: 'voice',
-          ...note,
+        const defaults = {
+            id: Date.now().toString(),
+            createdAt: now,
+            updatedAt: now,
+            title: 'New Voice Note',
+            content: '',
+            tags: ['voice-memo'],
+            type: 'voice',
         };
+        const newNote: Note = { ...defaults, ...note };
         set((state) => ({
             notes: [newNote, ...state.notes],
         }));
