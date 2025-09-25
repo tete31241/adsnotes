@@ -1,22 +1,21 @@
 'use client';
 
 import { Suspense } from 'react';
-import dynamic from 'next/dynamic';
+import NoteEditor from '@/components/note-editor';
 
-const NoteEditorWrapper = dynamic(() => import('@/components/note-editor-wrapper'), {
-  ssr: false,
-  loading: () => <div>Loading editor...</div>,
-});
-
-export const dynamic = "force-dynamic";
-
-export default function NewNotePage() {
+function NewNotePageContents() {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-6">New Note</h1>
-      <Suspense fallback={<div>Loading editor...</div>}>
-        <NoteEditorWrapper />
-      </Suspense>
+      <NoteEditor />
     </div>
+  );
+}
+
+export default function NewNotePage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <NewNotePageContents />
+    </Suspense>
   );
 }
