@@ -32,7 +32,7 @@ export default function AppHeader() {
       <SidebarTrigger className="lg:hidden" />
 
       <Link href="/notes" className="hidden items-center gap-2 font-bold lg:flex">
-        <Image src="/logo.png" alt="AdNotes Logo" width={100} height={30} priority />
+        <Image src="/adsnote.png" alt="AdNotes Logo" width={100} height={30} priority />
       </Link>
 
       <div className="relative ml-auto flex-1 md:grow-0">
