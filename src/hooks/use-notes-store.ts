@@ -40,14 +40,14 @@ export const useNotesStore = create<NotesState>()(
           });
         } else {
           savedNote = {
+            ...noteToSave,
             id: Date.now().toString(),
             createdAt: now,
             updatedAt: now,
-            title: 'Untitled Note',
-            content: '',
-            tags: [],
-            type: 'text',
-            ...noteToSave,
+            title: noteToSave.title || 'Untitled Note',
+            content: noteToSave.content || '',
+            tags: noteToSave.tags || [],
+            type: noteToSave.type || 'text',
           };
           set((state) => ({
             notes: [savedNote, ...state.notes],
@@ -62,14 +62,14 @@ export const useNotesStore = create<NotesState>()(
       addNote: (note) => {
         const now = new Date().toISOString();
         const newNote: Note = {
+          ...note,
           id: Date.now().toString(),
           createdAt: now,
           updatedAt: now,
-          title: 'New Voice Note',
-          content: '',
-          tags: ['voice-memo'],
-          type: 'voice',
-          ...note,
+          title: note.title || 'New Voice Note',
+          content: note.content || '',
+          tags: note.tags || ['voice-memo'],
+          type: note.type || 'voice',
         };
         set((state) => ({
             notes: [newNote, ...state.notes],
