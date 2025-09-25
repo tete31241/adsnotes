@@ -31,7 +31,13 @@ export const useNotesStore = create<NotesState>()(
 
         if (noteToSave.id) {
           const originalNote = get().getNoteById(noteToSave.id);
-          savedNote = { ...originalNote!, ...noteToSave, updatedAt: now };
+          savedNote = {
+            ...originalNote!,
+            ...noteToSave,
+            updatedAt: now,
+            type: noteToSave.type || originalNote!.type,
+          };
+
           set((state) => ({
             notes: state.notes.map((n) => (n.id === noteToSave.id ? savedNote : n)),
           }));
@@ -40,16 +46,16 @@ export const useNotesStore = create<NotesState>()(
             description: `"${savedNote.title}" has been saved.`,
           });
         } else {
-          const defaults = {
+          savedNote = {
             id: Date.now().toString(),
             createdAt: now,
             updatedAt: now,
-            title: 'Untitled Note',
-            content: '',
-            tags: [],
-            type: 'text',
+            title: noteToSave.title || 'Untitled Note',
+            content: noteToSave.content || '',
+            tags: noteToSave.tags || [],
+            type: noteToSave.type || 'text',
+            audioUrl: noteToSave.audioUrl,
           };
-          savedNote = { ...defaults, ...noteToSave };
           set((state) => ({
             notes: [savedNote, ...state.notes],
           }));
@@ -62,16 +68,16 @@ export const useNotesStore = create<NotesState>()(
       },
       addNote: (note) => {
         const now = new Date().toISOString();
-        const defaults = {
-            id: Date.now().toString(),
+        const newNote: Note = {
+            id: note.id || Date.now().toString(),
             createdAt: now,
             updatedAt: now,
-            title: 'New Voice Note',
-            content: '',
-            tags: ['voice-memo'],
-            type: 'voice',
+            title: note.title || 'New Voice Note',
+            content: note.content || '',
+            tags: note.tags || ['voice-memo'],
+            type: note.type || 'voice',
+            audioUrl: note.audioUrl,
         };
-        const newNote: Note = { ...defaults, ...note };
         set((state) => ({
             notes: [newNote, ...state.notes],
         }));
