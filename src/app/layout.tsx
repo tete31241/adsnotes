@@ -6,6 +6,9 @@ import { Toaster } from '@/components/ui/toaster';
 export const metadata: Metadata = {
   title: 'AdNotes',
   description: 'A unique notepad app for organizing your thoughts.',
+  other: {
+    '21a82701d70f5cf6a75e544c91071cbb87cc147f': '21a82701d70f5cf6a75e544c91071cbb87cc147f',
+  },
 };
 
 export default function RootLayout({
